@@ -1,0 +1,66 @@
+To implement a mechanism for configuring logging levels and file paths for each API, you can utilize a configuration file or environment variables. Here's how you can approach it:
+
+1. Configuration File Approach**:
+   - Create a configuration file (e.g., `logging_config.json`) where each API is configured with its logging settings.
+   - Example `logging_config.json`:
+
+{
+  "apis": {
+    "search_api": {
+      "log_level": "info",
+      "log_file_path": "/var/log/search_api.log"
+    },
+    "user_api": {
+      "log_level": "debug",
+      "log_file_path": "/var/log/user_api.log"
+    },
+   
+  }
+}
+```
+
+   - Your application can read this configuration file during startup and configure logging accordingly.
+
+2. Environment Variables Approach**:
+   - Define environment variables for each API to specify logging settings.
+   - Example:
+
+```
+SEARCH_API_LOG_LEVEL=info
+SEARCH_API_LOG_FILE_PATH=/var/log/search_api.log
+
+USER_API_LOG_LEVEL=debug
+USER_API_LOG_FILE_PATH=/var/log/user_api.log
+```
+
+   - Your application reads these environment variables and configures logging accordingly.
+
+3. **Logging Library Integration**:
+   - Depending on the programming language and logging library you're using, you can integrate the configuration mechanism provided by the logging library.
+   - For example, in Python using the `logging` module, you can configure logging based on the settings retrieved from a configuration file or environment variables.
+
+Here's a simplified Python example using the `logging` module:
+
+```python
+import logging
+import json
+
+def configure_logging():
+    with open('logging_config.json') as f:
+        config = json.load(f)
+
+    for api, settings in config['apis'].items():
+        logger = logging.getLogger(api)
+        logger.setLevel(settings['log_level'])
+        handler = logging.FileHandler(settings['log_file_path'])
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+# Example usage
+configure_logging()
+logger = logging.getLogger('search_api')
+logger.info('This is an info message')
+```
+
+In this example, `configure_logging()` reads the logging configuration from the `logging_config.json` file and configures logging for each API accordingly. You can adapt this approach to suit your specific programming language and logging library.
